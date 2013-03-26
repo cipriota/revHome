@@ -1,10 +1,17 @@
 var data;
 
 $(function() {
+
 	initMouseActions();
+
 	fetchDataStatus();
+
 	initDisplay();
+
+	refreshDisplay();
+
 	initMouseActions();
+
 });
 
 function fetchDataStatus() {
@@ -48,9 +55,8 @@ function initDisplay() {
 		contentElem.addClass('content');
 		contentElem.addClass('off');
 
-
-		
 		devices = group.devices;
+
 		for(var j in devices) {
 			var deviceElem = $('<div>');
 			var iconElem = $('<div>');
@@ -59,30 +65,42 @@ function initDisplay() {
 			var device = devices[j];
 
 			iconElem.addClass('icon');
-			if (device.state) {
-				iconElem.addClass('on');
-			} else {
-				iconElem.addClass('off');
-			}
+			iconElem.addClass('off');
+
 
 			descElem.addClass('description');
 			descElem.text(device.description);
 			
+			deviceElem.attr('id', device.id);
 			deviceElem.addClass('device');
 			deviceElem.append(iconElem);
 			deviceElem.append(descElem);
 			
 			contentElem.append(deviceElem);
 		}
+
 		groupElem.attr('id', group.id);
 		groupElem.addClass('group');
 		groupElem.append(titleElem);
 		groupElem.append(contentElem);
 
 		$(container).append(groupElem);
+
 	}
 }
 
+function refreshDisplay() {
+	
+	for (var i in data) {
+		var group = data[0];
+
+		for (var j in group.devices) {
+			var device = group.devices[j];
+
+				console.log($('#'+group.id));
+		}
+	}
+};
 
 function initMouseActions() {
 	
