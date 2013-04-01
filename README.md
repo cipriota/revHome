@@ -1,6 +1,11 @@
 revHome
 =======
 
+Dev info:
+	Enable localhost AJAX requests in chrome
+		google-chrome  --disable-web-security
+
+
 Setup:
 
 Raspberry pi:
