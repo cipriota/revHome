@@ -1,4 +1,3 @@
-
 revHome
 =======
 
@@ -50,10 +49,10 @@ Communication
   Each transmission must contain sender and destinatary id's. This way every device knows if needs to resend the message.
   
   Server<->Device link protocol:
-  	Server->Device (read command)
-  		Req: $SERV,R,*
+  	Server->Server Device (read command)
+  		Req: $SER,R,*
   		Ack: $DEVC,A,<value>,*
   	
-  	Server->Device (set command)
+  	Server->Server Device (set command)
   		Req: $SERV,W,<value>,*
   		Ack: $DEV,A,<value>,*
