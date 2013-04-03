@@ -1,3 +1,4 @@
+
 revHome
 =======
 
@@ -47,3 +48,12 @@ Communication
   This system will have it's devices communicating by JSON strings through a 433 mhz wireless serial field.
   
   Each transmission must contain sender and destinatary id's. This way every device knows if needs to resend the message.
+  
+  Server<->Device link protocol:
+  	Server->Device (read command)
+  		Req: $SERV,R,*
+  		Ack: $DEVC,A,<value>,*
+  	
+  	Server->Device (set command)
+  		Req: $SERV,W,<value>,*
+  		Ack: $DEV,A,<value>,*
