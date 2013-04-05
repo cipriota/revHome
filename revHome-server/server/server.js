@@ -3,33 +3,26 @@ var serialTCPAddr = 'localhost';
 var net = require('net');
 var http = require('http');
 
-var system = [
-	{ 
-		"id": 1, 
-		"description": "Desc1", 
-		"devices":[ 
-			{ "id": 1, "state": false, "type": "lamp", "description": "Left head light" }, 
-			{ "id": 2, "state": false, "type": "lamp", "description": "Right head light" }, 
-			{ "id": 3, "state": false, "type": "outlet", "description": "Heater" }
-		]}, 
-	{ 
-		"id": 2, 
-		"description": "Desc2", 
-		"devices":[ 
-			{ "id": 4, "state": false, "type": "lamp", "description": "device 1" }, 
-			{ "id": 5, "state": false, "type": "lamp", "description": "device 2" }, 
-			{ "id": 6, "state": false, "type": "lamp", "description": "device 3" }
-		]},
-	{ 
-		"id": 3, 
-		"description": "Desc2", 
-		"devices":[ 
-			{ "id": 7, "state": false, "type": "lamp", "description": "device 1" }, 
-			{ "id": 8, "state": false, "type": "lamp", "description": "device 2" }, 
-			{ "id": 9, "state": false, "type": "lamp", "description": "device 3" }
-		]}
-	];
+var devices = [
+	{ "id": 1, "state": false, "type": "lamp", "description": "Left head light" }, 
+	{ "id": 2, "state": false, "type": "lamp", "description": "Right head light" }, 
+	{ "id": 3, "state": false, "type": "outlet", "description": "Heater" },
+	{ "id": 4, "state": false, "type": "lamp", "description": "device 1" }, 
+	{ "id": 5, "state": false, "type": "lamp", "description": "device 2" }, 
+	{ "id": 6, "state": false, "type": "lamp", "description": "device 3" },
+	{ "id": 7, "state": false, "type": "lamp", "description": "device 1" }, 
+	{ "id": 8, "state": false, "type": "lamp", "description": "device 2" }, 
+	{ "id": 9, "state": false, "type": "lamp", "description": "device 3" },
+];
 
+var groups = [
+	{ "id": 1, "devices": [1,2,3], "description": "group 1" },
+	{ "id": 2, "devices": [4,5,6], "description": "group 2" },
+	{ "id": 3, "devices": [7,8,9], "description": "group 3" }
+];
+
+init();
+	
 
 http.createServer(function(request,response){
 
@@ -44,56 +37,92 @@ http.createServer(function(request,response){
 		serialTCPPort,
 		serialTCPAddr, 
 		function (){
-			// R - READ
-			// A - ALL
-			
+
 			if (request.method=='POST') {
 				if (body.action=='R') {
-					client.write("$WEB,R,A,*\n\r"); 
+					sendData(response);
+					 
 				} else if (body.action=='W') {
-					var output = '$WEB,W,'+body.deviceId+','+body.deviceState+',*\n\r';
+					var state;
+					
+					if (body.deviceState)
+						state = 1;
+					else
+						state = 0;
+						
+					var output = '$WEB,W,' + body.deviceId + ',' + state + ',*\n\r';
+
 					client.write(output);
+					
+					for (var i in devices) {
+						if (devices[i].id==body.deviceId) {
+							devices[i].state = body.deviceState;
+							
+							break;
+						}
+					}
+					
+					sendData(response);
+					
 				}
 
 			}
+			
+			client.end();
 			
 		}
 	);
-	
-	client.on('data', function(rawData) {		
-		var data = rawData.toString().split(',');
-		var receivedDevices = [];
 		
-		for(var i=1; i<data.length && data[i].charAt(0)!='*'; i++) {
-
-			var device = {};
-			device.id = parseInt(data[i]);
-			i++;
-			device.state = (data[i] == "true");
-			receivedDevices.push(device);
-		}
-
-		for (var i in system) {
-			var device = system[i].devices;
-
-			for (var j in device) {
-				for (var k  in receivedDevices) {					
-					if (receivedDevices[k].id==device[j].id) {
-						system[i].devices[j].state=receivedDevices[k].state;
-					}
-				}
-			}
-		}
-		
-
-		response.writeHeader(200, {'Content-Type': 'application/json'});
-		response.write(JSON.stringify(system));
-		response.end();
-
-		client.end();
-	});
-
 }).listen(9090);
 
 
+function init() {
+	var client = net.createConnection(
+		serialTCPPort,
+		serialTCPAddr, 
+		function (){
+			for (var i in devices) {
+				client.write("$WEB,P," + devices[i].id + ",*\n\r");
+			}
+			
+			client.end();
+		}
+	);
+	
+	/*a
+	client.on('data', function(rawData) {
+		client.end();
+	}
+	*/
+}
 
+function sendData(response) {
+		
+		var sendObj = [];
+		
+		for (var i in groups) {
+			var group = {};
+			var groupDevices = groups[i].devices;
+			
+			group.id = groups[i].id;
+			group.description = groups[i].description;
+			group.devices = [];
+	
+			for (var k in groupDevices) {
+				for (var j in devices) {
+					if (devices[j].id==groupDevices[k]) {
+						group.devices.push(devices[j]);
+				
+						break;
+					}
+				}
+				
+			}
+			sendObj.push(group); 
+		}
+		
+		response.writeHeader(200, {'Content-Type': 'application/json'});
+
+		response.write(JSON.stringify(sendObj));
+		response.end();
+}

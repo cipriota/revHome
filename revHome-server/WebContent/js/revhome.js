@@ -23,6 +23,22 @@ function init() {
 	
 }
 
+function writeData(deviceId, deviceState) {
+	$.ajax({
+		url: "http://127.0.0.1:9090/",
+		type: 'POST',
+		data: JSON.stringify({ "action": "W", "deviceId": deviceId, "deviceState": !deviceState }),
+		async: true,
+		dataType: 'json'
+	})
+	.done(function(data) { 
+		currentData = data; 
+
+		refreshDisplay();
+	})
+	.fail(function() {});
+}
+
 function fetchDataStatus() {
 	
 	//currentData=[{ "id": 1, "description": "Livingroom", "devices":[ { "id": 1, "state": true, "type": "lamp", "description": "Left head light" }, { "id": 2, "state": false, "type": "lamp", "description": "Right head light" }, { "id": 3, "state": false, "type": "outlet", "description": "Heater" }	 ] }, { "id": 2, "description": "Bedroom", "devices":[ { "id": 1, "state": true, "type": "lamp", "description": "device 1" }, { "id": 2, "state": true, "type": "lamp", "description": "device 2" }, { "id": 3, "state": false, "type": "lamp", "description": "device 3" }]}];
@@ -79,12 +95,10 @@ function initDisplay() {
 			iconElem.addClass('click');
 			iconElem.addClass(device.type);
 			iconElem.css('background-size', '200 200');
+			iconElem.attr('id', device.id);
+			iconElem.attr('state', device.state);
 			iconElem.bind('click', function() {
-				if ($(this).hasClass('on')) {
-					$(this).switchClass('on', 'off');
-				} else {
-					$(this).switchClass('off', 'on');
-				}
+				writeData($(this).attr('id'), $(this).attr('state')=='true');
 			});
 			
 			descElem.addClass('description');
@@ -125,7 +139,7 @@ function refreshDisplay() {
 			var iconElem = $('#group-'+group.id).find('#device-'+device.id).children('.icon')[0];
 			
 			$(iconElem).removeClass('on').removeClass('off');
-			
+			$(iconElem).attr('state', device.state);
 			if (device.state) {
 				$(iconElem).addClass('on');
 			} else {
