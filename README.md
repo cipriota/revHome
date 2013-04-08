@@ -42,9 +42,8 @@ Communication
 -
   This system will have it's devices communicating by csv strings.
   
-  $MASTER,<command>,<device>,<value>,*
+  $MASTER,command,device,value,*
 
-	-
 	Command:
 		P - Initialize device
 		W - Write command
