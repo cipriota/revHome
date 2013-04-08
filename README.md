@@ -42,12 +42,15 @@ Communication
 -
   This system will have it's devices communicating by csv strings.
   
-  
-  Server<->Device link protocol:
-  	Server->Server Device (read command)
-  		Req: $SER,R,*
-  		Ack: $DEVC,A,<value>,*
-  	
-  	Server->Server Device (set command)
-  		Req: $SERV,W,<value>,*
-  		Ack: $DEV,A,<value>,*
+  $MASTER,<command>,<device>,<value>,*
+
+	-
+	Command:
+		P - Initialize device
+		W - Write command
+		R - Read value (not yet implemented)
+	Device:
+		Device id (1,2,...,n)
+	Value:
+		[0,1,...,255] ( >0 means on state)
+		
