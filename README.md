@@ -40,9 +40,13 @@ Network
   
 Communication
 -
-  This system will have it's devices communicating by csv strings.
+
   
-  $MASTER,command,device,value,*
+###Server-Device
+
+This system will have it's devices communicating through NMEA-like csv strings.
+
+$MASTER,command,device,value,*
 
 	Command:
 		P - Initialize device
@@ -53,3 +57,20 @@ Communication
 	Value:
 		[0,1,...,255] ( >0 means on state)
 		
+example
+
+	Turn on device 3: 
+		$MASTER,W,3,1,*
+	Turn off device 3:
+		$MASTER,W,3,0,*
+
+###WEB Client - Server
+WEB Client to server commnunication will be implemented using ajax requests through sockets (GET-POST) running on server.
+
+	{ 'action': command, 'device': deviceId, 'value': deviceId's value }
+	
+example
+
+	Turn on device 3:
+		{ 'action': 'W', 'device': 3, 'value': 1 }
+
