@@ -36,23 +36,41 @@ Events
   
 Network
 -
-  Mesh network will be implemented. This way every request will jump sequencially by every device until reaches it's final destinatary. Every device listens to the transmitting message. Subsequent devices must be within reach with each other.
-
-  Example: Sending a message to device id 3 in a 4 device network
-  
-  [Server] -> [Device 1] -> [Device 2] -> [Device 3] x [Device 4]
+  Point to point. Master based commands via SPI wireless network to client devices
   
 Communication
 -
-  This system will have it's devices communicating by JSON strings through a 433 mhz wireless serial field.
+
   
-  Each transmission must contain sender and destinatary id's. This way every device knows if needs to resend the message.
-  
-  Server<->Device link protocol:
-  	Server->Server Device (read command)
-  		Req: $SER,R,*
-  		Ack: $DEVC,A,<value>,*
-  	
-  	Server->Server Device (set command)
-  		Req: $SERV,W,<value>,*
-  		Ack: $DEV,A,<value>,*
+###Server-Device
+
+This system will have it's devices communicating through NMEA-like csv strings.
+
+$MASTER,command,device,value,*
+
+	Command:
+		P - Initialize device
+		W - Write command
+		R - Read value (not yet implemented)
+	Device:
+		Device id (1,2,...,n)
+	Value:
+		[0,1,...,255] ( >0 means on state)
+		
+example
+
+	Turn on device 3: 
+		$MASTER,W,3,1,*
+	Turn off device 3:
+		$MASTER,W,3,0,*
+
+###WEB Client - Server
+WEB Client to server commnunication will be implemented using ajax requests through sockets (GET-POST) running on server.
+
+	{ 'action': command, 'device': deviceId, 'value': deviceId's value }
+	
+example
+
+	Turn on device 3:
+		{ 'action': 'W', 'device': 3, 'value': 1 }
+
