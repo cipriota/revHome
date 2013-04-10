@@ -17,7 +17,7 @@ function init() {
 
 	initMouseActions();
 	
-	//setInterval(fetchDataStatus, timeout);
+	setInterval(fetchDataStatus, timeout);
 	
 	firstRun = false;
 	
@@ -25,7 +25,7 @@ function init() {
 
 function writeData(deviceId, deviceState) {
 	$.ajax({
-		url: "http://127.0.0.1:9090/",
+		url: 'http://192.168.10.191:9090/',
 		type: 'POST',
 		data: JSON.stringify({ "action": "W", "deviceId": deviceId, "deviceState": !deviceState }),
 		async: true,
@@ -45,7 +45,7 @@ function fetchDataStatus() {
 	//init();
 	
 	$.ajax({
-		url: "http://127.0.0.1:9090/",
+		url: 'http://raspberrypi:9090',
 		type: 'POST',
 		data: JSON.stringify({"action": "R"}),
 		async: true,

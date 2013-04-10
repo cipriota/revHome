@@ -50,8 +50,8 @@ http.createServer(function(request,response){
 					else
 						state = 0;
 						
-					var output = '$WEB,W,' + body.deviceId + ',' + state + ',*\n\r';
-
+					var output = '$SERVER,W,' + body.deviceId + ',' + state + ',*\n\r';
+					
 					client.write(output);
 					
 					for (var i in devices) {
@@ -77,23 +77,26 @@ http.createServer(function(request,response){
 
 
 function init() {
-	var client = net.createConnection(
-		serialTCPPort,
-		serialTCPAddr, 
-		function (){
-			for (var i in devices) {
-				client.write("$WEB,P," + devices[i].id + ",*\n\r");
-			}
-			
-			client.end();
-		}
-	);
+	var client = net.createConnection(serialTCPPort,serialTCPAddr);
 	
-	/*a
-	client.on('data', function(rawData) {
+	client.on('connect', function() {
+		var output = '';
+		
+		for (var i in devices) {
+			output = "$SERVER,P," + devices[i].id + ",*";
+			client.write(output);
+		}
 		client.end();
-	}
-	*/
+		
+	});
+	
+	client.on('data', function(data) {
+		console.log("Received: " + data.toString())
+		
+	});
+	
+	
+	
 }
 
 function sendData(response) {
