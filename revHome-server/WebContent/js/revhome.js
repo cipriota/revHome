@@ -25,7 +25,7 @@ function init() {
 
 function writeData(deviceId, deviceState) {
 	$.ajax({
-		url: 'http://192.168.10.191:9090/',
+		url: 'http://raspberrypi:9090/',
 		type: 'POST',
 		data: JSON.stringify({ "action": "W", "deviceId": deviceId, "deviceState": !deviceState }),
 		async: true,

@@ -124,7 +124,7 @@ function sendData(response) {
 			sendObj.push(group); 
 		}
 		
-		response.writeHeader(200, {'Content-Type': 'application/json'});
+		response.writeHeader(200, {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'});
 
 		response.write(JSON.stringify(sendObj));
 		response.end();
